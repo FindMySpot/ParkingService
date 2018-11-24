@@ -68,7 +68,16 @@ class TransportOpenData:
 
     def get_geo_json(self):
         response = self.make_request()
-        non_walking_journeys = list(filter(lambda x: x['journey'] is not None, response['connections'][0]['sections']))
+
+        connections = response['connections']
+        if not connections:
+            return None
+
+        sections = connections[0]['sections']
+        if not sections:
+            return None
+
+        non_walking_journeys = [x for x in sections if x['journey'] is not None]
         segments = list(map(lambda x: self.get_points_from_segment(x), non_walking_journeys))
         points = reduce(list.__add__, segments)
         return {

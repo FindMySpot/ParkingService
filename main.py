@@ -4,6 +4,7 @@ from flask_cors import CORS
 from models.sbb_station_parking import SBBStationParking
 from models.sbb_lines import TransportOpenData
 from models.sbb_parking_availability import ParkingAvailability
+from utils.distance import compute_route
 
 app = Flask(__name__)
 CORS(app)
@@ -49,13 +50,13 @@ def get_route(start, end):
 
 @app.route('/find-stations/lat/<string:lat>/lon/<string:lon>', methods=['GET'])
 def get_closest_stations(lat, lon):
-    # Return the closest 3 stations based on the location passed
+    # Return the closest 10 stations based on the location passed
     return jsonify(SBBStationParking.get_closest_stations(float(lat), float(lon)))
 
 
 @app.route('/find-available-stations/lat/<string:lat>/lon/<string:lon>', methods=['GET'])
 def get_closest_stations_with_availability(lat, lon):
-    # Return the closest 3 stations based on the location passed
+    # Return the closest 10 stations based on the location passed
     stations = SBBStationParking.get_closest_stations(float(lat), float(lon))
 
     station_names = []
@@ -71,6 +72,25 @@ def get_closest_stations_with_availability(lat, lon):
         station['station']['available_spots'] = availability
 
     return jsonify(stations)
+
+
+@app.route('/get-possible-routes/v1/lat/<string:lat>/lon/<string:lon>/destination/<string:destination>',
+           methods=['GET'])
+def get_possible_routes(lat, lon, destination):
+    # Return the closest 10 stations based on the location passed
+    closest_stations = SBBStationParking.get_closest_stations(float(lat), float(lon))
+    routes = []
+
+    for station in closest_stations:
+        station_name = station['station']['station_name']
+        transporter = TransportOpenData(station_name, destination)
+        route = compute_route(transporter, station)
+
+        routes.append(route)
+
+    routes = sorted(routes, key=lambda x: x['total_cost'])
+
+    return jsonify(routes)
 
 
 if __name__ == '__main__':

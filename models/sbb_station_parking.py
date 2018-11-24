@@ -82,6 +82,7 @@ class SBBStationParking:
 
     @staticmethod
     def get_closest_stations(lat, lon):
+        SBBStationParking.get_data()
         distances = get_closest_stations(lat, lon, SBBStationParking._station_info)
         return distances
 
