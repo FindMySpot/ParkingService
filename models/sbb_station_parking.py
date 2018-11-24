@@ -4,6 +4,7 @@ import json
 class SBBStationParking:
 
     _data = None
+    _station_info = {}
 
     def __init__(self):
         SBBStationParking._load_data()
@@ -13,6 +14,21 @@ class SBBStationParking:
         if SBBStationParking._data is None:
             with open('data/station-parking.json', 'r') as json_data:
                 SBBStationParking._data = json.load(json_data)
+                SBBStationParking.create_station_info()
+
+    @staticmethod
+    def create_station_info():
+        for entry in SBBStationParking._data:
+            SBBStationParking._station_info[entry['fields']['didok']] = {
+                'parking': {
+                    'parking_spots': entry["fields"].get("parkrail_anzahl", None),
+                    'price_per_day': entry["fields"].get("parkrail_preis_tag", None),
+                    'price_per_month': entry["fields"].get("parkrail_preis_monat", None)
+                },
+                'didok': entry['fields']['didok'],
+                'geometry': entry.get("geometry", {}),
+                'station_name': entry["fields"].get("stationsbezeichnung", "")
+            }
 
     @staticmethod
     def get_data():
