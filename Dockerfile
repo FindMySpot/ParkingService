@@ -8,5 +8,6 @@ RUN pip install -r requirements.txt
 ADD main.py .
 ADD data/ ./data
 ADD models/ ./models
+ADD utils/ ./utils
 
 CMD flask run --host=0.0.0.0

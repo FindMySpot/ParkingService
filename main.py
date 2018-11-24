@@ -47,10 +47,7 @@ def get_route(didok_start, didok_end):
 @app.route('/find-stations/lat/<string:lat>/lon/<string:lon>', methods=['GET'])
 def get_closest_stations(lat, lon):
     # Return the closest 3 stations based on the location passed
-    return jsonify({
-        'url_accessed': '/find-stations/lat/<string:lat>/lon/<string:lon>',
-        'params': [lat, lon]
-    })
+    return jsonify(SBBStationParking.get_closest_stations(float(lat), float(lon)))
 
 
 if __name__ == '__main__':

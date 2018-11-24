@@ -5,13 +5,20 @@ def compute_distance(coords_1, coords_2):
     return geopy.distance.vincenty(coords_1, coords_2).km
 
 
-def get_closest_stations(lat, lon, stations):
+def get_closest_stations(lat, lon, station_info):
     distances = []
-    for station in stations:
-        distance = compute_distance((lat, lon), station.get_coordinates())
-        distances.append((distance, station))
+    for didok in station_info:
+        station = station_info[didok]
+        geometry = station.get('geometry', None)
+        if not geometry:
+            continue
 
-    sorted(distances, key=lambda x: x[0])
+        coordinates = geometry['coordinates']
+        coordinates = (coordinates[1], coordinates[0])
+        distance = compute_distance((lat, lon), coordinates)
+        distances.append({'distance': distance, 'station': station})
+
+    distances = sorted(distances, key=lambda x: x['distance'])
 
     # Let's settle here for now
     return distances[:10]

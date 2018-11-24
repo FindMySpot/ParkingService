@@ -1,5 +1,7 @@
 import json
 
+from utils.distance import get_closest_stations
+
 
 class SBBStationParking:
 
@@ -70,3 +72,9 @@ class SBBStationParking:
                 "Name": station_info.get("fields", {}).get("stationsbezeichnung", "")
             }
         }
+
+    @staticmethod
+    def get_closest_stations(lat, lon):
+        distances = get_closest_stations(lat, lon, SBBStationParking._station_info)
+        return distances
+
