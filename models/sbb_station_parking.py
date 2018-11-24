@@ -27,7 +27,10 @@ class SBBStationParking:
                 },
                 'didok': entry['fields']['didok'],
                 'geometry': entry.get("geometry", {}),
-                'station_name': entry["fields"].get("stationsbezeichnung", "")
+                'station_name': entry["fields"].get("stationsbezeichnung", ""),
+                "properties": {
+                    "Name": entry["fields"].get("stationsbezeichnung", "")
+                }
             }
 
     @staticmethod
@@ -44,14 +47,7 @@ class SBBStationParking:
 
     @staticmethod
     def get_info_for_station(didok):
-        station_infos = list(filter(lambda x: x["fields"].get("didok", "") == didok, SBBStationParking.get_data()))
-        parking_info = list(map(lambda x: SBBStationParking.extract_parking_info(x), station_infos))
-        return {
-            "didok": didok,
-            "geometry": station_infos[0].get("geometry", {}),
-            "parking": parking_info,
-            "stationsbezeichnung": station_infos[0].get("fields", {}).get("stationsbezeichnung", "")
-        } if len(station_infos) > 0 else {}
+        return SBBStationParking._station_info.get(didok, {})
 
     @staticmethod
     def get_geo_info_for_all_stations():
@@ -63,19 +59,14 @@ class SBBStationParking:
 
     @staticmethod
     def get_geo_info_for_station(didok):
-        station_infos = list(filter(lambda x: x["fields"].get("didok", "") == didok, SBBStationParking.get_data()))
+        station_info = SBBStationParking._station_info.get(didok, None)
+        if not station_info:
+            return {}
+
         return {
             "type": "Feature",
-            "geometry": station_infos[0].get("geometry", {}),
+            "geometry": station_info.get("geometry", {}),
             "properties": {
-                "Name": station_infos[0].get("fields", {}).get("stationsbezeichnung", "")
+                "Name": station_info.get("fields", {}).get("stationsbezeichnung", "")
             }
-        } if len(station_infos) > 0 else {}
-
-    @staticmethod
-    def extract_parking_info(station):
-        return {
-            "parkrail_anzahl": station["fields"].get("parkrail_anzahl", -1),
-            "parkrail_preis_tag": station["fields"].get("parkrail_preis_tag", -1),
-            "parkrail_preis_monat": station["fields"].get("parkrail_preis_monat", -1),
         }
