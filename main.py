@@ -1,7 +1,10 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
+
 from models.sbb_station_parking import SBBStationParking
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/')
