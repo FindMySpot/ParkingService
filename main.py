@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from models.sbb_station_parking import SBBStationParking
 from models.sbb_lines import TransportOpenData
+from models.sbb_parking_availability import ParkingAvailability
 
 app = Flask(__name__)
 CORS(app)
@@ -49,6 +50,26 @@ def get_route(didok_start, didok_end):
 def get_closest_stations(lat, lon):
     # Return the closest 3 stations based on the location passed
     return jsonify(SBBStationParking.get_closest_stations(float(lat), float(lon)))
+
+
+@app.route('/find-available-stations/lat/<string:lat>/lon/<string:lon>', methods=['GET'])
+def get_closest_stations_with_availability(lat, lon):
+    # Return the closest 3 stations based on the location passed
+    stations = SBBStationParking.get_closest_stations(float(lat), float(lon))
+
+    station_names = []
+    for station in stations:
+        station_name = station['station_name']
+        station_names.append(station_name)
+
+    parking_inspector = ParkingAvailability()
+    availabilities = parking_inspector.get_stations_availability(station_names)
+
+    for i, station in enumerate(stations):
+        availability = availabilities[i]
+        station['station']['available_spots'] = availability
+
+    return jsonify(stations)
 
 
 @app.route('/price/from/<string:start>/to/<string:end>', methods=['GET'])
