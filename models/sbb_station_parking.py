@@ -32,8 +32,9 @@ class SBBStationParking:
         parking_info = list(map(lambda x: SBBStationParking.extract_parking_info(x), station_infos))
         return {
             "didok": didok,
-            "coordinates": station_infos[0].get("geometry", {}).get("coordinates", []),
+            "geometry": station_infos[0].get("geometry", {}),
             "parking": parking_info,
+            "stationsbezeichnung": station_infos[0].get("fields", {}).get("stationsbezeichnung", "")
         } if len(station_infos) > 0 else {}
 
     @staticmethod
