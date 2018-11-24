@@ -32,7 +32,7 @@ class SBBStationParking:
                 'station_name': entry["fields"].get("stationsbezeichnung", ""),
                 "properties": {
                     "Name": entry["fields"].get("stationsbezeichnung", ""),
-                    "Number of parking spaces": entry["fields"].get("parkrail_anzahl", 0)
+                    "Number_parking_spaces": entry["fields"].get("parkrail_anzahl", 0)
                 }
             }
             if SBBStationParking.is_valid_station_info(station_info):
