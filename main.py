@@ -9,7 +9,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return jsonify(SBBStationParking.get_info_for_station(3004))
+    return jsonify(SBBStationParking.get_info_for_station(4100))
 
 
 @app.route('/data', methods=['GET'])
