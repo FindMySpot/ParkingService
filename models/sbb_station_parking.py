@@ -54,6 +54,25 @@ class SBBStationParking:
         } if len(station_infos) > 0 else {}
 
     @staticmethod
+    def get_geo_info_for_all_stations():
+        didoks = set(map(lambda x: x["fields"]["didok"], SBBStationParking.get_data()))
+        return {
+            "type": "FeatureCollection",
+            "features": list(map(lambda x: SBBStationParking.get_geo_info_for_station(x), didoks))
+        }
+
+    @staticmethod
+    def get_geo_info_for_station(didok):
+        station_infos = list(filter(lambda x: x["fields"].get("didok", "") == didok, SBBStationParking.get_data()))
+        return {
+            "type": "Feature",
+            "geometry": station_infos[0].get("geometry", {}),
+            "properties": {
+                "Name": station_infos[0].get("fields", {}).get("stationsbezeichnung", "")
+            }
+        } if len(station_infos) > 0 else {}
+
+    @staticmethod
     def extract_parking_info(station):
         return {
             "parkrail_anzahl": station["fields"].get("parkrail_anzahl", -1),
