@@ -17,19 +17,13 @@ def get_data():
 @app.route('/stations', methods=['GET'])
 def get_stations():
     # Return all the stations contained in the data
-    return jsonify({
-        'url_accessed': '/stations',
-        'params': None
-    })
+    return jsonify(SBBStationParking.get_info_for_all_stations())
 
 
 @app.route('/station/<int:didok>', methods=['GET'])
 def get_station(didok):
     # Return the station with the corresponding didok
-    return jsonify({
-        'url_accessed': '/station/<int:didok>',
-        'params': didok
-    })
+    return jsonify(SBBStationParking.get_parking_information_for_station(didok))
 
 
 @app.route('/route/start/<int:didok_start>/end/<int:didok_end>', methods=['GET'])
