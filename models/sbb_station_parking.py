@@ -23,7 +23,7 @@ class SBBStationParking:
         for entry in SBBStationParking._data:
             station_info = {
                 'parking': {
-                    'parking_spots': entry["fields"].get("parkrail_anzahl", None),
+                    'parking_spots': entry["fields"].get("parkrail_anzahl", 0),
                     'price_per_day': entry["fields"].get("parkrail_preis_tag", None),
                     'price_per_month': entry["fields"].get("parkrail_preis_monat", None)
                 },
@@ -31,7 +31,8 @@ class SBBStationParking:
                 'geometry': entry.get("geometry", None),
                 'station_name': entry["fields"].get("stationsbezeichnung", ""),
                 "properties": {
-                    "Name": entry["fields"].get("stationsbezeichnung", "")
+                    "Name": entry["fields"].get("stationsbezeichnung", ""),
+                    "Number of parking spaces": entry["fields"].get("parkrail_anzahl", 0)
                 }
             }
             if SBBStationParking.is_valid_station_info(station_info):
