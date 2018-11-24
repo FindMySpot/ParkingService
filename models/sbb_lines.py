@@ -1,5 +1,5 @@
 import requests
-
+from functools import reduce
 
 from utils.distance import compute_distance
 
@@ -11,12 +11,14 @@ class TransportOpenData:
         self.start = start
         self.end = end
         self.price_per_km = 0.3
+        self.response = None
 
     def make_request(self):
-        final_url = self.url.format(start=self.start, end=self.end)
-        response = requests.get(final_url)
+        if self.response is None:
+            final_url = self.url.format(start=self.start, end=self.end)
+            self.response = requests.get(final_url)
 
-        return response.json()
+        return self.response.json()
 
     def get_distance(self, response):
         if not response['connections']:
@@ -64,4 +66,18 @@ class TransportOpenData:
 
         return distance * self.price_per_km
 
+
+    def get_geo_json(self):
+        response = self.make_request()
+        non_walking_journeys = list(filter(lambda x: x['journey'] is not None, response['connections'][0]['sections']))
+        segments = list(map(lambda x: self.get_points_from_segment(x), non_walking_journeys))
+        points = reduce(list.__add__, segments)
+        return {
+            "type": "LineString",
+            "coordinates": list(map(lambda x: [x['y'], x['x']], points)),
+        }
+
+    @staticmethod
+    def get_points_from_segment(segment):
+        return list(map(lambda x: x['station']['coordinate'], segment['journey']['passList']))
 

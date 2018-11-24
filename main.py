@@ -37,13 +37,14 @@ def get_station(didok):
     return jsonify(SBBStationParking.get_info_for_station(didok))
 
 
-@app.route('/route/start/<int:didok_start>/end/<int:didok_end>', methods=['GET'])
-def get_route(didok_start, didok_end):
+@app.route('/route/start/<string:start>/end/<string:end>', methods=['GET'])
+def get_route(start, end):
     # Return the route between two stations
-    return jsonify({
-        'url_accessed': '/route/start/<int:didok>/end/<int:didok>',
-        'params': [didok_start, didok_end]
-    })
+    # Return the cost between two stations
+    transporter = TransportOpenData(start, end)
+    cost_dict = {'cost': transporter.get_cost()}
+    geo_dict = transporter.get_geo_json()
+    return jsonify({ **cost_dict, **geo_dict })
 
 
 @app.route('/find-stations/lat/<string:lat>/lon/<string:lon>', methods=['GET'])
@@ -70,16 +71,6 @@ def get_closest_stations_with_availability(lat, lon):
         station['station']['available_spots'] = availability
 
     return jsonify(stations)
-
-
-@app.route('/price/from/<string:start>/to/<string:end>', methods=['GET'])
-def get_lines(start, end):
-    # Return the cost between two stations
-    transporter = TransportOpenData(start, end)
-    cost = transporter.get_cost()
-    return jsonify({
-        'cost': cost
-    })
 
 
 if __name__ == '__main__':
