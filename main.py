@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 from models.sbb_station_parking import SBBStationParking
+from models.sbb_lines import TransportOpenData
 
 app = Flask(__name__)
 CORS(app)
@@ -48,6 +49,16 @@ def get_route(didok_start, didok_end):
 def get_closest_stations(lat, lon):
     # Return the closest 3 stations based on the location passed
     return jsonify(SBBStationParking.get_closest_stations(float(lat), float(lon)))
+
+
+@app.route('/price/from/<string:start>/to/<string:end>', methods=['GET'])
+def get_lines(start, end):
+    # Return the cost between two stations
+    transporter = TransportOpenData(start, end)
+    cost = transporter.get_cost()
+    return jsonify({
+        'cost': cost
+    })
 
 
 if __name__ == '__main__':
