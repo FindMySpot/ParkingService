@@ -1,9 +1,19 @@
 import json
 
-data = None
+class SBBStationParking:
 
-with open('data/station-parking.json', 'r') as json_data:
-    data = json.load(json_data)
+    _data = None
 
-def get_data():
-    return data
+    def __init__(self):
+        SBBStationParking._load_data()
+
+    @staticmethod
+    def _load_data():
+        if SBBStationParking._data is None:
+            with open('data/station-parking.json', 'r') as json_data:
+                SBBStationParking._data = json.load(json_data)
+
+    @staticmethod
+    def get_data():
+        SBBStationParking._load_data()
+        return SBBStationParking._data
