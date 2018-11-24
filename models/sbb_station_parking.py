@@ -19,19 +19,27 @@ class SBBStationParking:
     @staticmethod
     def create_station_info():
         for entry in SBBStationParking._data:
-            SBBStationParking._station_info[entry['fields']['didok']] = {
+            station_info = {
                 'parking': {
                     'parking_spots': entry["fields"].get("parkrail_anzahl", None),
                     'price_per_day': entry["fields"].get("parkrail_preis_tag", None),
                     'price_per_month': entry["fields"].get("parkrail_preis_monat", None)
                 },
                 'didok': entry['fields']['didok'],
-                'geometry': entry.get("geometry", {}),
+                'geometry': entry.get("geometry", None),
                 'station_name': entry["fields"].get("stationsbezeichnung", ""),
                 "properties": {
                     "Name": entry["fields"].get("stationsbezeichnung", "")
                 }
             }
+            if SBBStationParking.is_valid_station_info(station_info):
+                SBBStationParking._station_info[entry['fields']['didok']] = station_info
+
+    @staticmethod
+    def is_valid_station_info(station_info):
+        if not station_info["geometry"]:
+            return False
+        return True
 
     @staticmethod
     def get_data():
@@ -51,7 +59,8 @@ class SBBStationParking:
 
     @staticmethod
     def get_geo_info_for_all_stations():
-        didoks = set(map(lambda x: x["fields"]["didok"], SBBStationParking.get_data()))
+        SBBStationParking._load_data()
+        didoks = set(map(lambda x: x["didok"], SBBStationParking._station_info.values()))
         return {
             "type": "FeatureCollection",
             "features": list(map(lambda x: SBBStationParking.get_geo_info_for_station(x), didoks))
@@ -63,10 +72,11 @@ class SBBStationParking:
         if not station_info:
             return {}
 
+        if not station_info["geometry"].get("type"):
+            print(station_info)
+
         return {
             "type": "Feature",
-            "geometry": station_info.get("geometry", {}),
-            "properties": {
-                "Name": station_info.get("fields", {}).get("stationsbezeichnung", "")
-            }
+            "geometry": station_info["geometry"],
+            "properties": station_info["properties"],
         }
