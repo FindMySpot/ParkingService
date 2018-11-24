@@ -73,8 +73,17 @@ class TransportOpenData:
         segments = list(map(lambda x: self.get_points_from_segment(x), non_walking_journeys))
         points = reduce(list.__add__, segments)
         return {
-            "type": "LineString",
-            "coordinates": list(map(lambda x: [x['y'], x['x']], points)),
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "properties": {},
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": list(map(lambda x: [x['y'], x['x']], points)),
+                    },
+                }
+            ]
         }
 
     @staticmethod
