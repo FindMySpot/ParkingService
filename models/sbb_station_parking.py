@@ -74,9 +74,6 @@ class SBBStationParking:
         if not station_info:
             return {}
 
-        if not station_info["geometry"].get("type"):
-            print(station_info)
-
         return {
             "type": "Feature",
             "geometry": station_info["geometry"],

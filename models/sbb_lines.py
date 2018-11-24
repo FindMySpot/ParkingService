@@ -66,7 +66,6 @@ class TransportOpenData:
 
         return distance * self.price_per_km
 
-
     def get_geo_json(self):
         response = self.make_request()
         non_walking_journeys = list(filter(lambda x: x['journey'] is not None, response['connections'][0]['sections']))

@@ -1,6 +1,9 @@
 import geopy.distance
 
 
+PRICE_GAS_PER_KM = 0.15
+
+
 def compute_distance(coords_1, coords_2):
     return geopy.distance.vincenty(coords_1, coords_2).km
 
@@ -16,7 +19,11 @@ def get_closest_stations(lat, lon, station_info):
         coordinates = geometry['coordinates']
         coordinates = (coordinates[1], coordinates[0])
         distance = compute_distance((lat, lon), coordinates)
-        distances.append({'distance': distance, 'station': station})
+        distances.append({
+            'distance': distance,
+            'station': station,
+            'trip_cost': distance * PRICE_GAS_PER_KM
+        })
 
     distances = sorted(distances, key=lambda x: x['distance'])
 
