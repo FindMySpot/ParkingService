@@ -24,10 +24,11 @@ class SBBStationParking:
     @staticmethod
     def create_station_info():
         for entry in SBBStationParking._data:
-            occupied = math.ceil(entry["fields"].get("parkrail_anzahl", 0) * uniform(0, 1))
+            available_spaces = entry["fields"].get("parkrail_anzahl", 0)
+            occupied = math.ceil(available_spaces * uniform(0, 1))
             station_info = {
                 'parking': {
-                    'parking_spots': entry["fields"].get("parkrail_anzahl", 0),
+                    'parking_spots': available_spaces,
                     'price_per_day': entry["fields"].get("parkrail_preis_tag", None),
                     'price_per_month': entry["fields"].get("parkrail_preis_monat", None),
                     'occupied_spaces': occupied
@@ -37,8 +38,9 @@ class SBBStationParking:
                 'station_name': entry["fields"].get("stationsbezeichnung", ""),
                 "properties": {
                     "Name": entry["fields"].get("stationsbezeichnung", ""),
-                    "Number_parking_spaces": entry["fields"].get("parkrail_anzahl", 0),
-                    "Number_occupied_spaces": occupied
+                    "Number_parking_spaces": available_spaces,
+                    "Number_occupied_spaces": occupied,
+                    "Fill_factor": occupied / (available_spaces + 1)
                 }
             }
             if SBBStationParking.is_valid_station_info(station_info):
