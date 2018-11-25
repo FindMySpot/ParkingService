@@ -85,6 +85,8 @@ def get_possible_routes(lat, lon, destination):
         station_name = station['station']['station_name']
         transporter = TransportOpenData(station_name, destination)
         route = compute_route(transporter, station)
+        if not route:
+            continue
 
         routes.append(route)
 

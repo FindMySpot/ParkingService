@@ -2,7 +2,7 @@ import geopy.distance
 
 
 PRICE_GAS_PER_KM = 0.15
-NUMBER_OF_ROUTES = 5
+NUMBER_OF_ROUTES = 3
 
 
 def compute_distance(coords_1, coords_2):
@@ -38,6 +38,11 @@ def compute_route(transporter, station):
 
     drive_cost = station['trip_cost']
     parking_cost = station['station']['parking']['price_per_day']
+    occupied_spaces = station['station']['parking']['occupied_spaces']
+    parking_spots = station['station']['parking']['parking_spots']
+
+    if parking_spots == occupied_spaces:
+        return None
 
     if not parking_cost:
         parking_cost = 0
