@@ -1,4 +1,7 @@
 import json
+from random import uniform
+
+import math
 
 from utils.distance import get_closest_stations
 
@@ -21,18 +24,21 @@ class SBBStationParking:
     @staticmethod
     def create_station_info():
         for entry in SBBStationParking._data:
+            occupied = math.ceil(entry["fields"].get("parkrail_anzahl", 0) * uniform(0, 1))
             station_info = {
                 'parking': {
                     'parking_spots': entry["fields"].get("parkrail_anzahl", 0),
                     'price_per_day': entry["fields"].get("parkrail_preis_tag", None),
-                    'price_per_month': entry["fields"].get("parkrail_preis_monat", None)
+                    'price_per_month': entry["fields"].get("parkrail_preis_monat", None),
+                    'occupied_spaces': occupied
                 },
                 'didok': entry['fields']['didok'],
                 'geometry': entry.get("geometry", None),
                 'station_name': entry["fields"].get("stationsbezeichnung", ""),
                 "properties": {
                     "Name": entry["fields"].get("stationsbezeichnung", ""),
-                    "Number_parking_spaces": entry["fields"].get("parkrail_anzahl", 0)
+                    "Number_parking_spaces": entry["fields"].get("parkrail_anzahl", 0),
+                    "Number_occupied_spaces": occupied
                 }
             }
             if SBBStationParking.is_valid_station_info(station_info):
